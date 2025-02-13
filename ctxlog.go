@@ -4,9 +4,20 @@ import (
 	"context"
 )
 
+type Level int
+
+const (
+	LevelDebug Level = -4
+	LevelInfo  Level = 0
+	LevelWarn  Level = 4
+	LevelError Level = 8
+)
+
 type Logger interface {
 	With(args ...any) Logger
 	WithGroup(name string) Logger
+
+	Log(ctx context.Context, level Level, msg string, args ...any)
 
 	Debug(msg string, args ...any)
 	Info(msg string, args ...any)
@@ -31,9 +42,10 @@ func From(ctx context.Context) Logger {
 
 type discardLogger struct{}
 
-func (l discardLogger) With(args ...any) Logger      { return l }
-func (l discardLogger) WithGroup(name string) Logger { return l }
-func (discardLogger) Debug(msg string, args ...any)  {}
-func (discardLogger) Info(msg string, args ...any)   {}
-func (discardLogger) Warn(msg string, args ...any)   {}
-func (discardLogger) Error(msg string, args ...any)  {}
+func (l discardLogger) With(args ...any) Logger                                     { return l }
+func (l discardLogger) WithGroup(name string) Logger                                { return l }
+func (discardLogger) Log(ctx context.Context, level Level, msg string, args ...any) {}
+func (discardLogger) Debug(msg string, args ...any)                                 {}
+func (discardLogger) Info(msg string, args ...any)                                  {}
+func (discardLogger) Warn(msg string, args ...any)                                  {}
+func (discardLogger) Error(msg string, args ...any)                                 {}
